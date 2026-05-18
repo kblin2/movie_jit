@@ -293,7 +293,7 @@ document.addEventListener('click', e => {
 });
 
 async function searchOMDB(q) {
-  if (OMDB_KEY === 'YOUR_OMDB_API_KEY') {
+  if (!OMDB_KEY || OMDB_KEY.length < 5) {
     console.warn('OMDB key not injected yet');
     return;
   }
