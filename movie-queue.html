@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Queue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --ink: #1A1714;
+    --muted: #6B6560;
+    --accent: #C8432A;
+    --accent-light: #F2E0DB;
+    --gold: #C9902A;
+    --gold-light: #F5EDDB;
+    --green: #3A7D5A;
+    --green-light: #DDF0E8;
+    --border: rgba(26,23,20,0.12);
+    --card-bg: #FDFAF5;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  header {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+
+  .add-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .add-form input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .add-form input:focus { border-color: var(--accent); }
+  .add-form input::placeholder { color: var(--muted); }
+
+  .btn-add {
+    padding: 0.7rem 1.4rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .btn-add:hover { background: #a8361f; }
+  .btn-add:active { transform: scale(0.97); }
+
+  .tabs {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 0;
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .tab {
+    padding: 0.45rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    color: var(--muted);
+    background: transparent;
+  }
+
+  .tab.active {
+    background: var(--ink);
+    color: white;
+  }
+
+  .tab:not(.active):hover {
+    background: rgba(26,23,20,0.06);
+    color: var(--ink);
+  }
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    margin-left: 4px;
+    background: rgba(26,23,20,0.12);
+    color: var(--muted);
+  }
+
+  .tab.active .count-badge {
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem 4rem;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 4rem 0;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.3;
+  }
+
+  .empty p { font-size: 0.9rem; }
+
+  .movie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .movie-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color 0.15s, transform 0.1s;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .movie-card:hover { border-color: rgba(26,23,20,0.22); }
+  .movie-card.completed { background: #FAFAF7; }
+
+  .movie-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: rgba(26,23,20,0.15);
+    min-width: 2rem;
+    text-align: right;
+    line-height: 1;
+  }
+
+  .movie-info { flex: 1; min-width: 0; }
+
+  .movie-title {
+    font-weight: 500;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+
+  .movie-card.completed .movie-title {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .movie-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .star-row {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.1s;
+    color: #D9D3C8;
+    user-select: none;
+  }
+
+  .star:hover { transform: scale(1.2); }
+  .star.lit { color: var(--gold); }
+
+  .btn-complete {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .btn-complete:hover {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .movie-card.completed .btn-complete {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .movie-card.completed .btn-complete:hover {
+    background: #fde8e4;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 1.1rem;
+    padding: 0.2rem;
+    line-height: 1;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+  }
+
+  .movie-card:hover .btn-delete { opacity: 1; }
+  .btn-delete:hover { color: var(--accent); }
+
+  .added-by {
+    font-size: 0.72rem;
+    color: rgba(107,101,96,0.7);
+  }
+
+  .rating-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .name-prompt {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,23,20,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+  }
+
+  .name-modal {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 2rem;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(26,23,20,0.2);
+  }
+
+  .name-modal h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .name-modal p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .name-modal input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+    background: var(--cream);
+    color: var(--ink);
+  }
+
+  .name-modal input:focus { border-color: var(--accent); }
+
+  .btn-start {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-start:hover { background: #a8361f; }
+
+  .viewer-tag {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 500px) {
+    .movie-num { display: none; }
+    .add-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="name-prompt" id="namePrompt">
+  <div class="name-modal">
+    <h2>What's your name?</h2>
+    <p>So we know who recommended what. It only takes a second.</p>
+    <input type="text" id="nameInput" placeholder="Your first name…" maxlength="30" autocomplete="off">
+    <button class="btn-start" onclick="saveName()">Let's go →</button>
+  </div>
+</div>
+
+<header>
+  <div class="header-top">
+    <h1>🎬 The Queue</h1>
+  </div>
+  <p class="subtitle">Suggest a movie. Let the list grow. <span id="viewerName"></span></p>
+  <div class="add-form">
+    <input type="text" id="movieInput" placeholder="Add a movie title…" maxlength="80" autocomplete="off" onkeydown="if(event.key==='Enter')addMovie()">
+    <button class="btn-add" onclick="addMovie()">+ Add</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('queue',this)">
+    Queue <span class="count-badge" id="queueCount">0</span>
+  </button>
+  <button class="tab" onclick="setTab('watched',this)">
+    Watched <span class="count-badge" id="watchedCount">0</span>
+  </button>
+</div>
+
+<main>
+  <div class="loading" id="loading">Loading the queue…</div>
+  <div class="movie-list" id="movieList" style="display:none"></div>
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="empty-icon">🍿</div>
+    <p id="emptyText">Nothing here yet. Be the first to suggest one!</p>
+  </div>
+</main>
+
+<script>
+const STORAGE_KEY = 'movie-queue-v1';
+let movies = [];
+let userName = '';
+let currentTab = 'queue';
+
+function saveName() {
+  const val = document.getElementById('nameInput').value.trim();
+  if (!val) return;
+  userName = val;
+  localStorage.setItem('mq-username', val);
+  document.getElementById('namePrompt').style.display = 'none';
+  document.getElementById('viewerName').innerHTML = `<span class="viewer-tag">👤 ${escapeHtml(val)}</span>`;
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveName();
+});
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function load() {
+  try {
+    const res = await window.storage.get(STORAGE_KEY, true);
+    movies = res ? JSON.parse(res.value) : [];
+  } catch(e) {
+    movies = [];
+  }
+  render();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('movieList').style.display = 'flex';
+}
+
+async function save() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(movies), true);
+  } catch(e) {}
+}
+
+async function addMovie() {
+  const input = document.getElementById('movieInput');
+  const title = input.value.trim();
+  if (!title || !userName) {
+    if (!userName) document.getElementById('namePrompt').style.display = 'flex';
+    return;
+  }
+  const movie = {
+    id: Date.now() + Math.random(),
+    title,
+    addedBy: userName,
+    addedAt: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
+    completed: false,
+    rating: 0
+  };
+  movies.unshift(movie);
+  input.value = '';
+  await save();
+  render();
+}
+
+async function toggleComplete(id) {
+  const m = movies.find(x => x.id === id);
+  if (!m) return;
+  m.completed = !m.completed;
+  if (!m.completed) m.rating = 0;
+  await save();
+  render();
+}
+
+async function setRating(id, stars) {
+  const m = movies.find(x => x.id === id);
+  if (!m) return;
+  m.rating = stars;
+  await save();
+  render();
+}
+
+async function deleteMovie(id) {
+  movies = movies.filter(x => x.id !== id);
+  await save();
+  render();
+}
+
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function render() {
+  const queued = movies.filter(m => !m.completed);
+  const watched = movies.filter(m => m.completed);
+  document.getElementById('queueCount').textContent = queued.length;
+  document.getElementById('watchedCount').textContent = watched.length;
+
+  const list = currentTab === 'queue' ? queued : watched;
+  const container = document.getElementById('movieList');
+  const empty = document.getElementById('emptyState');
+  const emptyText = document.getElementById('emptyText');
+
+  if (!list.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    emptyText.textContent = currentTab === 'queue'
+      ? 'Nothing in the queue. Add something!'
+      : 'No movies marked as watched yet.';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  container.innerHTML = list.map((m, i) => `
+    <div class="movie-card${m.completed ? ' completed' : ''}">
+      <div class="movie-num">${i + 1}</div>
+      <div class="movie-info">
+        <div class="movie-title">${escapeHtml(m.title)}</div>
+        <div class="movie-meta">
+          <span class="added-by">Suggested by ${escapeHtml(m.addedBy)} · ${m.addedAt}</span>
+        </div>
+        ${m.completed ? `
+        <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
+          <span class="rating-label">Your rating:</span>
+          <div class="star-row" id="stars-${m.id}">
+            ${[1,2,3,4,5].map(s => `
+              <span class="star${m.rating >= s ? ' lit' : ''}"
+                onclick="setRating(${m.id}, ${s})"
+                onmouseover="hoverStars('${m.id}', ${s})"
+                onmouseout="resetStars('${m.id}', ${m.rating})"
+              >★</span>
+            `).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+      <button class="btn-complete" onclick="toggleComplete(${m.id})">
+        ${m.completed ? '↩ Undo' : '✓ Watched'}
+      </button>
+      <button class="btn-delete" onclick="deleteMovie(${m.id})" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+
+function hoverStars(id, n) {
+  const row = document.getElementById('stars-' + id);
+  if (!row) return;
+  row.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('lit', i < n);
+  });
+}
+
+function resetStars(id, rating) {
+  const row = document.getElementById('stars-' + id);
+  if (!row) return;
+  row.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('lit', i < rating);
+  });
+}
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('mq-username');
+  if (saved) {
+    userName = saved;
+    document.getElementById('namePrompt').style.display = 'none';
+    document.getElementById('viewerName').innerHTML = `<span class="viewer-tag">👤 ${escapeHtml(saved)}</span>`;
+  }
+  load();
+});
+
+setInterval(async () => {
+  try {
+    const res = await window.storage.get(STORAGE_KEY, true);
+    const fresh = res ? JSON.parse(res.value) : [];
+    if (JSON.stringify(fresh) !== JSON.stringify(movies)) {
+      movies = fresh;
+      render();
+    }
+  } catch(e) {}
+}, 8000);
+</script>
+</body>
+</html>
