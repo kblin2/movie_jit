@@ -3,23 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kenny's Amazing Movie List</title>
+<title>The Queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --cream: #F5F0E8;
-    --ink: #1A1714;
-    --muted: #6B6560;
-    --accent: #C8432A;
-    --accent-light: #F2E0DB;
-    --gold: #C9902A;
-    --gold-light: #F5EDDB;
-    --green: #3A7D5A;
-    --green-light: #DDF0E8;
-    --border: rgba(26,23,20,0.12);
-    --card-bg: #FDFAF5;
+    --cream: #F5F0E8; --ink: #1A1714; --muted: #6B6560;
+    --accent: #C8432A; --accent-light: #F2E0DB;
+    --gold: #C9902A; --gold-light: #F5EDDB;
+    --green: #3A7D5A; --green-light: #DDF0E8;
+    --border: rgba(26,23,20,0.12); --card-bg: #FDFAF5;
   }
   body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
@@ -29,52 +23,25 @@
 
   .search-wrap { position: relative; }
   .add-form { display: flex; gap: 0.5rem; }
-  .add-form input {
-    flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border);
-    background: var(--card-bg); border-radius: 6px; font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem; color: var(--ink); outline: none; transition: border-color 0.15s;
-  }
+  .add-form input { flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border); background: var(--card-bg); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink); outline: none; transition: border-color 0.15s; }
   .add-form input:focus { border-color: var(--accent); }
   .add-form input::placeholder { color: var(--muted); }
-
-  .btn-add {
-    padding: 0.7rem 1.4rem; background: var(--accent); color: white; border: none;
-    border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
-    font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.15s, transform 0.1s;
-  }
+  .btn-add { padding: 0.7rem 1.4rem; background: var(--accent); color: white; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.15s, transform 0.1s; }
   .btn-add:hover { background: #a8361f; }
   .btn-add:active { transform: scale(0.97); }
-  .btn-add:disabled { background: var(--muted); cursor: default; }
 
-  /* Autocomplete dropdown */
-  .autocomplete {
-    position: absolute; top: calc(100% + 4px); left: 0; right: 60px;
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-    z-index: 300; overflow: hidden; box-shadow: 0 8px 24px rgba(26,23,20,0.12);
-  }
-  .ac-item {
-    display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
-    cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border);
-  }
+  .autocomplete { position: absolute; top: calc(100% + 4px); left: 0; right: 60px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; z-index: 300; overflow: hidden; box-shadow: 0 8px 24px rgba(26,23,20,0.12); }
+  .ac-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
   .ac-item:last-child { border-bottom: none; }
   .ac-item:hover { background: var(--accent-light); }
   .ac-poster { width: 36px; height: 52px; object-fit: cover; border-radius: 3px; flex-shrink: 0; background: rgba(26,23,20,0.08); }
   .ac-poster-placeholder { width: 36px; height: 52px; border-radius: 3px; flex-shrink: 0; background: rgba(26,23,20,0.08); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
-  .ac-info { flex: 1; min-width: 0; }
   .ac-title { font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ac-year { font-size: 0.75rem; color: var(--muted); }
   .ac-searching { padding: 0.75rem; font-size: 0.85rem; color: var(--muted); text-align: center; }
 
-  /* Preview card (confirm before adding) */
-  .preview-overlay {
-    position: fixed; inset: 0; background: rgba(26,23,20,0.55);
-    display: flex; align-items: center; justify-content: center; z-index: 400; padding: 1rem;
-  }
-  .preview-card {
-    background: var(--card-bg); border-radius: 14px; padding: 1.5rem;
-    max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(26,23,20,0.2);
-    animation: popIn 0.2s ease;
-  }
+  .preview-overlay { position: fixed; inset: 0; background: rgba(26,23,20,0.55); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 1rem; }
+  .preview-card { background: var(--card-bg); border-radius: 14px; padding: 1.5rem; max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(26,23,20,0.2); animation: popIn 0.2s ease; }
   @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .preview-inner { display: flex; gap: 1rem; margin-bottom: 1rem; }
   .preview-poster { width: 80px; height: 118px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
@@ -86,7 +53,7 @@
   .preview-actions { display: flex; gap: 0.5rem; }
   .btn-confirm { flex: 1; padding: 0.65rem; background: var(--accent); color: white; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
   .btn-confirm:hover { background: #a8361f; }
-  .btn-cancel { padding: 0.65rem 1rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--muted); cursor: pointer; transition: background 0.15s; }
+  .btn-cancel { padding: 0.65rem 1rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--muted); cursor: pointer; }
   .btn-cancel:hover { background: rgba(26,23,20,0.06); }
 
   .tabs { max-width: 800px; margin: 0 auto; padding: 1rem 1.5rem 0; display: flex; gap: 0.25rem; }
@@ -96,6 +63,12 @@
   .count-badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; margin-left: 4px; background: rgba(26,23,20,0.12); color: var(--muted); }
   .tab.active .count-badge { background: rgba(255,255,255,0.25); color: white; }
 
+  .toolbar { max-width: 800px; margin: 0 auto; padding: 0.75rem 1.5rem 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .sort-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-right: 0.25rem; }
+  .sort-btn { padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .sort-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .sort-btn:not(.active):hover { background: rgba(26,23,20,0.06); color: var(--ink); }
+
   main { max-width: 800px; margin: 0 auto; padding: 1.25rem 1.5rem 4rem; }
   .loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.9rem; }
   .empty { text-align: center; padding: 4rem 0; color: var(--muted); }
@@ -103,15 +76,10 @@
   .empty p { font-size: 0.9rem; }
 
   .movie-list { display: flex; flex-direction: column; gap: 0.6rem; }
-  .movie-card {
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
-    display: flex; align-items: stretch; overflow: hidden;
-    transition: border-color 0.15s; animation: slideIn 0.25s ease;
-  }
+  .movie-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: stretch; overflow: hidden; transition: border-color 0.15s; animation: slideIn 0.25s ease; }
   @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
   .movie-card:hover { border-color: rgba(26,23,20,0.22); }
   .movie-card.completed { background: #FAFAF7; }
-
   .card-poster { width: 56px; flex-shrink: 0; object-fit: cover; }
   .card-poster-ph { width: 56px; flex-shrink: 0; background: rgba(26,23,20,0.06); display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
   .card-body { flex: 1; min-width: 0; padding: 0.85rem 1rem; display: flex; align-items: center; gap: 1rem; }
@@ -121,12 +89,10 @@
   .movie-card.completed .movie-title { text-decoration: line-through; color: var(--muted); }
   .movie-meta { font-size: 0.75rem; color: var(--muted); font-weight: 300; }
   .imdb-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 0.72rem; color: var(--gold); font-weight: 500; margin-left: 6px; }
-
   .star-row { display: flex; gap: 2px; }
   .star { font-size: 1.1rem; cursor: pointer; line-height: 1; transition: transform 0.1s; color: #D9D3C8; user-select: none; }
   .star:hover { transform: scale(1.2); }
   .star.lit { color: var(--gold); }
-
   .btn-complete { padding: 0.4rem 0.9rem; font-size: 0.8rem; font-weight: 500; font-family: 'DM Sans', sans-serif; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; border: 1px solid var(--border); background: transparent; color: var(--muted); }
   .btn-complete:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
   .movie-card.completed .btn-complete { background: var(--green-light); border-color: var(--green); color: var(--green); }
@@ -134,9 +100,25 @@
   .btn-delete { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.2rem; padding: 0.2rem 0.5rem; line-height: 1; opacity: 0.3; transition: opacity 0.15s; }
   .movie-card:hover .btn-delete { opacity: 1; }
   .btn-delete:hover { color: var(--accent); }
-
   .rating-label { font-size: 0.72rem; color: var(--muted); margin-right: 4px; }
-  .viewer-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
+
+  /* Contributors */
+  .contributors-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .contributor-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; animation: slideIn 0.25s ease; }
+  .contributor-card:hover { border-color: rgba(26,23,20,0.22); }
+  .contrib-rank { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: rgba(26,23,20,0.15); min-width: 2rem; text-align: center; line-height: 1; }
+  .contrib-rank.gold   { color: #C9902A; }
+  .contrib-rank.silver { color: #9A9A9A; }
+  .contrib-rank.bronze { color: #A0674A; }
+  .contrib-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--accent); flex-shrink: 0; }
+  .contrib-info { flex: 1; min-width: 0; }
+  .contrib-name { font-weight: 500; font-size: 1rem; margin-bottom: 4px; }
+  .contrib-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .contrib-stat { font-size: 0.75rem; color: var(--muted); }
+  .contrib-stat strong { color: var(--ink); font-weight: 500; }
+  .contrib-bar-wrap { width: 80px; flex-shrink: 0; }
+  .contrib-bar-bg { height: 4px; background: rgba(26,23,20,0.08); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .contrib-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
 
   /* Name modal */
   .name-prompt { position: fixed; inset: 0; background: rgba(26,23,20,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
@@ -147,9 +129,10 @@
   .name-modal input:focus { border-color: var(--accent); }
   .btn-start { width: 100%; padding: 0.75rem; background: var(--accent); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
   .btn-start:hover { background: #a8361f; }
+  .viewer-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
 
   @media (max-width: 500px) {
-    .movie-num { display: none; }
+    .movie-num, .contrib-bar-wrap { display: none; }
     .add-form { flex-direction: column; }
     .autocomplete { right: 0; }
   }
@@ -157,11 +140,8 @@
 </head>
 <body>
 
-<!-- ============================================================
-     PASTE YOUR KEYS HERE
-     ============================================================ -->
 <script>
-  const OMDB_KEY  = 'YOUR_OMDB_API_KEY';   // from omdbapi.com
+  const OMDB_KEY  = 'YOUR_OMDB_API_KEY';
   const FB_CONFIG = {
     apiKey:            "YOUR_FIREBASE_API_KEY",
     authDomain:        "YOUR_PROJECT.firebaseapp.com",
@@ -171,13 +151,10 @@
     appId:             "YOUR_APP_ID"
   };
 </script>
-<!-- ============================================================ -->
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-<!-- Name modal -->
 <div class="name-prompt" id="namePrompt">
   <div class="name-modal">
     <h2>What's your name?</h2>
@@ -187,7 +164,6 @@
   </div>
 </div>
 
-<!-- Movie preview / confirm modal -->
 <div class="preview-overlay" id="previewOverlay" style="display:none">
   <div class="preview-card">
     <div class="preview-inner">
@@ -211,7 +187,7 @@
   <div class="search-wrap">
     <div class="add-form">
       <input type="text" id="movieInput" placeholder="Search for a movie…" maxlength="80" autocomplete="off">
-      <button class="btn-add" id="addBtn" onclick="handleAddClick()">+ Add</button>
+      <button class="btn-add" onclick="handleAddClick()">+ Add</button>
     </div>
     <div class="autocomplete" id="autocomplete" style="display:none"></div>
   </div>
@@ -219,12 +195,15 @@
 
 <div class="tabs">
   <button class="tab active" onclick="setTab('queue',this)">Queue <span class="count-badge" id="queueCount">0</span></button>
-  <button class="tab" onclick="setTab('watched',this)">Watched <span class="count-badge" id="watchedCount">0</span></button>
+  <button class="tab"        onclick="setTab('watched',this)">Watched <span class="count-badge" id="watchedCount">0</span></button>
+  <button class="tab"        onclick="setTab('contrib',this)">Contributors <span class="count-badge" id="contribCount">0</span></button>
 </div>
+
+<div class="toolbar" id="toolbar" style="display:none"></div>
 
 <main>
   <div class="loading" id="loading">Loading the queue…</div>
-  <div class="movie-list" id="movieList" style="display:none"></div>
+  <div id="movieList" style="display:none"></div>
   <div class="empty" id="emptyState" style="display:none">
     <div class="empty-icon">🍿</div>
     <p id="emptyText">Nothing here yet. Be the first to suggest one!</p>
@@ -233,13 +212,14 @@
 
 <script>
 let db, unsubscribe;
-let movies = [];
-let userName = '';
-let currentTab = 'queue';
+let movies      = [];
+let userName    = '';
+let currentTab  = 'queue';
+let watchedSort = 'date';    // 'date' | 'rating'
+let contribSort = 'volume';  // 'volume' | 'rating'
 let searchTimer = null;
-let pendingMovie = null; // movie object ready to confirm
+let pendingMovie = null;
 
-// ── Firebase init ──────────────────────────────────────────────
 firebase.initializeApp(FB_CONFIG);
 db = firebase.firestore();
 
@@ -250,7 +230,7 @@ function startListening() {
       movies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       render();
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('movieList').style.display = 'flex';
+      document.getElementById('movieList').style.display = 'block';
     }, err => {
       console.error(err);
       document.getElementById('loading').textContent = 'Could not connect. Check your Firebase config.';
@@ -272,9 +252,9 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── OMDB search ───────────────────────────────────────────────
+// ── OMDB ──────────────────────────────────────────────────────
 const input = document.getElementById('movieInput');
-const acBox = document.getElementById('autocomplete');
+const acBox  = document.getElementById('autocomplete');
 
 input.addEventListener('input', () => {
   clearTimeout(searchTimer);
@@ -282,31 +262,21 @@ input.addEventListener('input', () => {
   if (q.length < 2) { acBox.style.display = 'none'; return; }
   searchTimer = setTimeout(() => searchOMDB(q), 350);
 });
-
 input.addEventListener('keydown', e => {
   if (e.key === 'Escape') acBox.style.display = 'none';
-  if (e.key === 'Enter') handleAddClick();
+  if (e.key === 'Enter')  handleAddClick();
 });
-
 document.addEventListener('click', e => {
   if (!e.target.closest('.search-wrap')) acBox.style.display = 'none';
 });
 
 async function searchOMDB(q) {
-  if (!OMDB_KEY || OMDB_KEY.length < 5) {
-    console.warn('OMDB key not injected yet');
-    return;
-  }
-  console.log('Searching OMDB for:', q, '| Key starts with:', OMDB_KEY.slice(0, 4));
+  if (!OMDB_KEY || OMDB_KEY.length < 5) return;
   acBox.innerHTML = '<div class="ac-searching">Searching…</div>';
   acBox.style.display = 'block';
   try {
-    const url = `https://www.omdbapi.com/?s=${encodeURIComponent(q)}&type=movie&apikey=${OMDB_KEY}`;
-    console.log('Fetching:', url.replace(OMDB_KEY, 'KEY_HIDDEN'));
-    const r = await fetch(url);
-    console.log('Response status:', r.status);
+    const r    = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(q)}&type=movie&apikey=${OMDB_KEY}`);
     const data = await r.json();
-    console.log('OMDB response:', data);
     if (data.Response === 'False' || !data.Search) {
       acBox.innerHTML = '<div class="ac-searching">No results found.</div>';
       return;
@@ -316,14 +286,12 @@ async function searchOMDB(q) {
         ${m.Poster && m.Poster !== 'N/A'
           ? `<img class="ac-poster" src="${esc(m.Poster)}" alt="">`
           : `<div class="ac-poster-placeholder">🎬</div>`}
-        <div class="ac-info">
+        <div>
           <div class="ac-title">${esc(m.Title)}</div>
           <div class="ac-year">${esc(m.Year)}</div>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   } catch(e) {
-    console.error('OMDB fetch error:', e);
     acBox.innerHTML = '<div class="ac-searching">Search failed.</div>';
   }
 }
@@ -331,13 +299,10 @@ async function searchOMDB(q) {
 async function selectMovie(imdbID, title, year, poster) {
   acBox.style.display = 'none';
   input.value = title;
-  // Fetch full details for preview
   try {
     const r = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=${OMDB_KEY}`);
-    const d = await r.json();
-    showPreview(d);
+    showPreview(await r.json());
   } catch(e) {
-    // fallback with just basic info
     showPreview({ Title: title, Year: year, Poster: poster, imdbID, Plot: '', Genre: '', imdbRating: 'N/A', Runtime: '' });
   }
 }
@@ -345,20 +310,16 @@ async function selectMovie(imdbID, title, year, poster) {
 function showPreview(d) {
   pendingMovie = d;
   document.getElementById('previewTitle').textContent = d.Title + (d.Year ? ` (${d.Year})` : '');
-  document.getElementById('previewPlot').textContent = d.Plot && d.Plot !== 'N/A' ? d.Plot : '';
-
+  document.getElementById('previewPlot').textContent  = (d.Plot && d.Plot !== 'N/A') ? d.Plot : '';
   const tags = [];
-  if (d.Genre && d.Genre !== 'N/A') d.Genre.split(', ').forEach(g => tags.push(g));
-  if (d.Runtime && d.Runtime !== 'N/A') tags.push(d.Runtime);
+  if (d.Genre     && d.Genre     !== 'N/A') d.Genre.split(', ').forEach(g => tags.push(g));
+  if (d.Runtime   && d.Runtime   !== 'N/A') tags.push(d.Runtime);
   if (d.imdbRating && d.imdbRating !== 'N/A') tags.push('⭐ ' + d.imdbRating + ' IMDb');
   document.getElementById('previewTags').innerHTML = tags.map(t => `<span class="tag">${esc(t)}</span>`).join('');
-
   const pw = document.getElementById('previewPosterWrap');
-  if (d.Poster && d.Poster !== 'N/A') {
-    pw.innerHTML = `<img class="preview-poster" src="${esc(d.Poster)}" alt="">`;
-  } else {
-    pw.innerHTML = `<div class="preview-poster-ph">🎬</div>`;
-  }
+  pw.innerHTML = (d.Poster && d.Poster !== 'N/A')
+    ? `<img class="preview-poster" src="${esc(d.Poster)}" alt="">`
+    : `<div class="preview-poster-ph">🎬</div>`;
   document.getElementById('previewOverlay').style.display = 'flex';
 }
 
@@ -374,45 +335,38 @@ async function confirmAdd() {
   }
   const d = pendingMovie;
   await db.collection('movies').add({
-    title:      d.Title,
-    year:       d.Year || '',
-    poster:     (d.Poster && d.Poster !== 'N/A') ? d.Poster : '',
-    genre:      (d.Genre && d.Genre !== 'N/A') ? d.Genre : '',
-    runtime:    (d.Runtime && d.Runtime !== 'N/A') ? d.Runtime : '',
-    imdbRating: (d.imdbRating && d.imdbRating !== 'N/A') ? d.imdbRating : '',
-    imdbID:     d.imdbID || '',
-    addedBy:    userName,
-    addedAt:    new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
-    addedTs:    firebase.firestore.FieldValue.serverTimestamp(),
-    completed:  false,
-    rating:     0
+    title:       d.Title,
+    year:        d.Year || '',
+    poster:      (d.Poster     && d.Poster     !== 'N/A') ? d.Poster     : '',
+    genre:       (d.Genre      && d.Genre      !== 'N/A') ? d.Genre      : '',
+    runtime:     (d.Runtime    && d.Runtime    !== 'N/A') ? d.Runtime    : '',
+    imdbRating:  (d.imdbRating && d.imdbRating !== 'N/A') ? d.imdbRating : '',
+    imdbID:      d.imdbID || '',
+    addedBy:     userName,
+    addedAt:     new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
+    addedTs:     firebase.firestore.FieldValue.serverTimestamp(),
+    completed:   false,
+    rating:      0,
+    completedTs: null
   });
   input.value = '';
   closePreview();
 }
 
-// Fallback: add by plain text if OMDB key not set
 function handleAddClick() {
-  if (OMDB_KEY === 'YOUR_OMDB_API_KEY') {
-    addPlain();
-  } else if (pendingMovie) {
-    confirmAdd();
-  }
-  // else wait for user to pick from autocomplete
+  if (!OMDB_KEY || OMDB_KEY.length < 5) addPlain();
+  else if (pendingMovie) confirmAdd();
 }
 
 async function addPlain() {
   const title = input.value.trim();
-  if (!title || !userName) {
-    if (!userName) document.getElementById('namePrompt').style.display = 'flex';
-    return;
-  }
+  if (!title || !userName) { if (!userName) document.getElementById('namePrompt').style.display = 'flex'; return; }
   await db.collection('movies').add({
-    title, year: '', poster: '', genre: '', runtime: '', imdbRating: '', imdbID: '',
+    title, year:'', poster:'', genre:'', runtime:'', imdbRating:'', imdbID:'',
     addedBy: userName,
     addedAt: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
     addedTs: firebase.firestore.FieldValue.serverTimestamp(),
-    completed: false, rating: 0
+    completed: false, rating: 0, completedTs: null
   });
   input.value = '';
 }
@@ -421,9 +375,12 @@ async function addPlain() {
 async function toggleComplete(id) {
   const m = movies.find(x => x.id === id);
   if (!m) return;
-  const update = { completed: !m.completed };
-  if (m.completed) update.rating = 0;
-  await db.collection('movies').doc(id).update(update);
+  const nowComplete = !m.completed;
+  await db.collection('movies').doc(id).update({
+    completed:   nowComplete,
+    rating:      nowComplete ? m.rating : 0,
+    completedTs: nowComplete ? firebase.firestore.FieldValue.serverTimestamp() : null
+  });
 }
 
 async function setRating(id, stars) {
@@ -434,33 +391,86 @@ async function deleteMovie(id) {
   await db.collection('movies').doc(id).delete();
 }
 
-// ── Render ────────────────────────────────────────────────────
+// ── Tabs & toolbar ────────────────────────────────────────────
 function setTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  renderToolbar();
   render();
 }
 
+function renderToolbar() {
+  const tb = document.getElementById('toolbar');
+  if (currentTab === 'watched') {
+    tb.style.display = 'flex';
+    tb.innerHTML = `
+      <span class="sort-label">Sort by</span>
+      <button class="sort-btn ${watchedSort==='date'  ?'active':''}" onclick="setWatchedSort('date')">📅 Date watched</button>
+      <button class="sort-btn ${watchedSort==='rating'?'active':''}" onclick="setWatchedSort('rating')">⭐ My rating</button>`;
+  } else if (currentTab === 'contrib') {
+    tb.style.display = 'flex';
+    tb.innerHTML = `
+      <span class="sort-label">Sort by</span>
+      <button class="sort-btn ${contribSort==='volume'?'active':''}" onclick="setContribSort('volume')">🎬 Most suggested</button>
+      <button class="sort-btn ${contribSort==='rating'?'active':''}" onclick="setContribSort('rating')">⭐ Avg rating</button>`;
+  } else {
+    tb.style.display = 'none';
+  }
+}
+
+function setWatchedSort(s) { watchedSort = s; renderToolbar(); render(); }
+function setContribSort(s) { contribSort = s; renderToolbar(); render(); }
+
+// ── Render ────────────────────────────────────────────────────
 function render() {
   const queued  = movies.filter(m => !m.completed);
   const watched = movies.filter(m =>  m.completed);
+
+  // Build contributor stats from all movies
+  const contribMap = {};
+  movies.forEach(m => {
+    const name = m.addedBy || 'Unknown';
+    if (!contribMap[name]) contribMap[name] = { name, total:0, watched:0, ratingSum:0, ratedCount:0 };
+    contribMap[name].total++;
+    if (m.completed) {
+      contribMap[name].watched++;
+      if (m.rating > 0) { contribMap[name].ratingSum += m.rating; contribMap[name].ratedCount++; }
+    }
+  });
+  const contribs = Object.values(contribMap);
+
   document.getElementById('queueCount').textContent   = queued.length;
   document.getElementById('watchedCount').textContent = watched.length;
+  document.getElementById('contribCount').textContent = contribs.length;
 
-  const list = currentTab === 'queue' ? queued : watched;
   const container = document.getElementById('movieList');
   const empty     = document.getElementById('emptyState');
 
+  if (currentTab === 'queue') {
+    renderMovieList(queued, container, empty, 'Nothing in the queue yet — add something!');
+  } else if (currentTab === 'watched') {
+    const sorted = [...watched].sort((a, b) => {
+      if (watchedSort === 'rating') return (b.rating || 0) - (a.rating || 0);
+      const ta = b.completedTs?.seconds ?? b.addedTs?.seconds ?? 0;
+      const tb = a.completedTs?.seconds ?? a.addedTs?.seconds ?? 0;
+      return ta - tb;
+    });
+    renderMovieList(sorted, container, empty, 'No watched movies yet.');
+  } else {
+    renderContributors(contribs, container, empty);
+  }
+}
+
+function renderMovieList(list, container, empty, emptyMsg) {
   if (!list.length) {
     container.innerHTML = '';
     empty.style.display = 'block';
-    document.getElementById('emptyText').textContent = currentTab === 'queue'
-      ? 'Add something you bums' : 'No watched movies yet.';
+    document.getElementById('emptyText').textContent = emptyMsg;
     return;
   }
   empty.style.display = 'none';
-
+  container.className = 'movie-list';
   container.innerHTML = list.map((m, i) => `
     <div class="movie-card${m.completed ? ' completed' : ''}">
       ${m.poster
@@ -477,7 +487,7 @@ function render() {
           </div>
           ${m.completed ? `
           <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
-            <span class="rating-label">Your rating:</span>
+            <span class="rating-label">My rating:</span>
             <div class="star-row" id="stars-${m.id}">
               ${[1,2,3,4,5].map(s => `
                 <span class="star${m.rating >= s ? ' lit' : ''}"
@@ -493,8 +503,54 @@ function render() {
         </button>
         <button class="btn-delete" onclick="deleteMovie('${m.id}')" title="Remove">×</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
+}
+
+function renderContributors(contribs, container, empty) {
+  if (!contribs.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    document.getElementById('emptyText').textContent = 'No contributors yet.';
+    return;
+  }
+  empty.style.display = 'none';
+  container.className = 'contributors-list';
+
+  const sorted = [...contribs].sort((a, b) => {
+    if (contribSort === 'rating') {
+      const ar = a.ratedCount ? a.ratingSum / a.ratedCount : 0;
+      const br = b.ratedCount ? b.ratingSum / b.ratedCount : 0;
+      return br - ar;
+    }
+    return b.total - a.total;
+  });
+
+  const maxTotal = Math.max(...sorted.map(c => c.total), 1);
+
+  container.innerHTML = sorted.map((c, i) => {
+    const avgRating = c.ratedCount ? (c.ratingSum / c.ratedCount).toFixed(1) : '—';
+    const initials  = c.name.slice(0, 2).toUpperCase();
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const rankLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1;
+    const barPct    = Math.round((c.total / maxTotal) * 100);
+    return `
+      <div class="contributor-card">
+        <div class="contrib-rank ${rankClass}">${rankLabel}</div>
+        <div class="contrib-avatar">${initials}</div>
+        <div class="contrib-info">
+          <div class="contrib-name">${esc(c.name)}</div>
+          <div class="contrib-stats">
+            <span class="contrib-stat">🎬 <strong>${c.total}</strong> suggested</span>
+            <span class="contrib-stat">✅ <strong>${c.watched}</strong> watched</span>
+            <span class="contrib-stat">⭐ <strong>${avgRating}</strong> avg rating</span>
+          </div>
+        </div>
+        <div class="contrib-bar-wrap">
+          <div style="font-size:0.65rem;color:var(--muted);text-align:right;margin-bottom:3px">${c.total} film${c.total!==1?'s':''}</div>
+          <div class="contrib-bar-bg"><div class="contrib-bar-fill" style="width:${barPct}%"></div></div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function hoverStars(id, n) {
