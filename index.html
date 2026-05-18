@@ -293,12 +293,20 @@ document.addEventListener('click', e => {
 });
 
 async function searchOMDB(q) {
-  if (OMDB_KEY === 'YOUR_OMDB_API_KEY') { return; }
+  if (OMDB_KEY === 'YOUR_OMDB_API_KEY') {
+    console.warn('OMDB key not injected yet');
+    return;
+  }
+  console.log('Searching OMDB for:', q, '| Key starts with:', OMDB_KEY.slice(0, 4));
   acBox.innerHTML = '<div class="ac-searching">Searching…</div>';
   acBox.style.display = 'block';
   try {
-    const r = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(q)}&type=movie&apikey=${OMDB_KEY}`);
+    const url = `https://www.omdbapi.com/?s=${encodeURIComponent(q)}&type=movie&apikey=${OMDB_KEY}`;
+    console.log('Fetching:', url.replace(OMDB_KEY, 'KEY_HIDDEN'));
+    const r = await fetch(url);
+    console.log('Response status:', r.status);
     const data = await r.json();
+    console.log('OMDB response:', data);
     if (data.Response === 'False' || !data.Search) {
       acBox.innerHTML = '<div class="ac-searching">No results found.</div>';
       return;
@@ -315,6 +323,7 @@ async function searchOMDB(q) {
       </div>
     `).join('');
   } catch(e) {
+    console.error('OMDB fetch error:', e);
     acBox.innerHTML = '<div class="ac-searching">Search failed.</div>';
   }
 }
