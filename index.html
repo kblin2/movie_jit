@@ -344,7 +344,7 @@ function applyAdminUI() {
 // ── Firebase ──────────────────────────────────────────────────
 function startListening() {
   if (unsubscribe) unsubscribe();
-  unsubscribe = db.collection('movies').orderBy('addedTs', 'desc')
+  unsubscribe = db.collection('movies').orderBy('addedTs', 'asc')
     .onSnapshot(snap => {
       movies = snap.docs.map(d => ({id: d.id, ...d.data()}));
       render();
