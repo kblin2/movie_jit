@@ -11,7 +11,7 @@
   :root {
     --cream: #F5F0E8; --ink: #1A1714; --muted: #6B6560;
     --accent: #C8432A; --accent-light: #F2E0DB;
-    --gold: #C9902A; --gold-light: #F5EDDB;
+    --gold: #C9902A;
     --green: #3A7D5A; --green-light: #DDF0E8;
     --border: rgba(26,23,20,0.12); --card-bg: #FDFAF5;
   }
@@ -30,10 +30,8 @@
   .btn-add:hover { background: #a8361f; }
   .btn-add:active { transform: scale(0.97); }
 
-  /* Admin badge */
   .admin-badge { display: inline-flex; align-items: center; gap: 4px; background: #1A1714; color: #F5F0E8; font-size: 0.72rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
 
-  /* Admin password modal */
   .admin-overlay { position: fixed; inset: 0; background: rgba(26,23,20,0.5); display: flex; align-items: center; justify-content: center; z-index: 600; padding: 1rem; }
   .admin-modal { background: var(--card-bg); border-radius: 14px; padding: 2rem; max-width: 340px; width: 100%; box-shadow: 0 20px 60px rgba(26,23,20,0.2); animation: popIn 0.18s ease; }
   .admin-modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 0.4rem; }
@@ -42,7 +40,7 @@
   .admin-modal input:focus { border-color: var(--accent); }
   .admin-error { font-size: 0.8rem; color: var(--accent); margin-bottom: 0.6rem; min-height: 1.1em; }
   .admin-modal-btns { display: flex; gap: 0.5rem; }
-  .btn-admin-confirm { flex: 1; padding: 0.65rem; background: var(--ink); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn-admin-confirm { flex: 1; padding: 0.65rem; background: var(--ink); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
   .btn-admin-confirm:hover { background: #333; }
   .btn-admin-cancel { padding: 0.65rem 1rem; border: 1px solid var(--border); border-radius: 7px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--muted); cursor: pointer; }
   .btn-admin-cancel:hover { background: rgba(26,23,20,0.06); }
@@ -68,7 +66,7 @@
   .tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 10px; background: rgba(26,23,20,0.08); color: var(--muted); }
   .preview-plot { font-size: 0.82rem; color: var(--muted); line-height: 1.5; max-height: 80px; overflow-y: auto; }
   .preview-actions { display: flex; gap: 0.5rem; }
-  .btn-confirm { flex: 1; padding: 0.65rem; background: var(--accent); color: white; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn-confirm { flex: 1; padding: 0.65rem; background: var(--accent); color: white; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
   .btn-confirm:hover { background: #a8361f; }
   .btn-cancel { padding: 0.65rem 1rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--muted); cursor: pointer; }
   .btn-cancel:hover { background: rgba(26,23,20,0.06); }
@@ -106,9 +104,11 @@
   .movie-card.completed .movie-title { text-decoration: line-through; color: var(--muted); }
   .movie-meta { font-size: 0.75rem; color: var(--muted); font-weight: 300; }
   .imdb-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 0.72rem; color: var(--gold); font-weight: 500; margin-left: 6px; }
+  .watched-label { display: inline-flex; align-items: center; gap: 3px; font-size: 0.72rem; color: var(--green); font-weight: 500; margin-left: 6px; }
   .star-row { display: flex; gap: 2px; }
-  .star { font-size: 1.1rem; cursor: pointer; line-height: 1; transition: transform 0.1s; color: #D9D3C8; user-select: none; }
-  .star:hover { transform: scale(1.2); }
+  .star { font-size: 1.1rem; line-height: 1; color: #D9D3C8; user-select: none; }
+  .star.interactive { cursor: pointer; transition: transform 0.1s; }
+  .star.interactive:hover { transform: scale(1.2); }
   .star.lit { color: var(--gold); }
   .btn-complete { padding: 0.4rem 0.9rem; font-size: 0.8rem; font-weight: 500; font-family: 'DM Sans', sans-serif; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; border: 1px solid var(--border); background: transparent; color: var(--muted); }
   .btn-complete:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
@@ -119,7 +119,6 @@
   .btn-delete:hover { color: var(--accent); }
   .rating-label { font-size: 0.72rem; color: var(--muted); margin-right: 4px; }
 
-  /* Contributors */
   .contributors-list { display: flex; flex-direction: column; gap: 0.75rem; }
   .contributor-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; animation: slideIn 0.25s ease; }
   .contributor-card:hover { border-color: rgba(26,23,20,0.22); }
@@ -137,14 +136,13 @@
   .contrib-bar-bg { height: 4px; background: rgba(26,23,20,0.08); border-radius: 2px; overflow: hidden; margin-top: 4px; }
   .contrib-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
 
-  /* Name modal */
   .name-prompt { position: fixed; inset: 0; background: rgba(26,23,20,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
   .name-modal { background: var(--card-bg); border-radius: 14px; padding: 2rem; max-width: 360px; width: 100%; box-shadow: 0 20px 60px rgba(26,23,20,0.2); }
   .name-modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 0.5rem; }
   .name-modal p { color: var(--muted); font-size: 0.88rem; margin-bottom: 1.25rem; line-height: 1.6; }
   .name-modal input { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 0.75rem; outline: none; background: var(--cream); color: var(--ink); }
   .name-modal input:focus { border-color: var(--accent); }
-  .btn-start { width: 100%; padding: 0.75rem; background: var(--accent); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn-start { width: 100%; padding: 0.75rem; background: var(--accent); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; }
   .btn-start:hover { background: #a8361f; }
   .viewer-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
 
@@ -158,9 +156,8 @@
 <body>
 
 <script>
-  const OMDB_KEY    = 'YOUR_OMDB_API_KEY';
-  const ADMIN_PASS  = 'diddyballs';   
-  const FB_CONFIG   = {
+  // ── Paste your Firebase config here (safe to expose) ──
+  const FB_CONFIG = {
     apiKey:            "YOUR_FIREBASE_API_KEY",
     authDomain:        "YOUR_PROJECT.firebaseapp.com",
     projectId:         "YOUR_PROJECT_ID",
@@ -168,6 +165,12 @@
     messagingSenderId: "YOUR_SENDER_ID",
     appId:             "YOUR_APP_ID"
   };
+
+  // ── Paste your Cloud Function URLs here (no secrets, just URLs) ──
+  const FN_BASE   = "YOUR_WORKER_URL";
+  const FN_SEARCH = FN_BASE + "/search";
+  const FN_DETAIL = FN_BASE + "/detail";
+  const FN_ADMIN  = FN_BASE + "/admin";
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -192,7 +195,7 @@
     <div class="admin-error" id="adminError"></div>
     <div class="admin-modal-btns">
       <button class="btn-admin-cancel" onclick="closeAdminPrompt()">Cancel</button>
-      <button class="btn-admin-confirm" onclick="submitAdminPass()">Unlock</button>
+      <button class="btn-admin-confirm" id="adminSubmitBtn" onclick="submitAdminPass()">Unlock</button>
     </div>
   </div>
 </div>
@@ -216,8 +219,8 @@
 </div>
 
 <header>
-  <h1 id="mainTitle">🎬 Kenny's Kool Kinemas </h1>
-  <p class="subtitle">Suggest a banger please :3 <span id="viewerName"></span></p>
+  <h1 id="mainTitle">🎬 The Queue</h1>
+  <p class="subtitle">Suggest a movie for the list. <span id="viewerName"></span></p>
   <div class="search-wrap">
     <div class="add-form">
       <input type="text" id="movieInput" placeholder="Search for a movie…" maxlength="80" autocomplete="off">
@@ -227,10 +230,10 @@
   </div>
 </header>
 
-<div class="tabs" id="tabBar">
+<div class="tabs">
   <button class="tab active" id="tabQueue"   onclick="setTab('queue',this)">Queue <span class="count-badge" id="queueCount">0</span></button>
-  <button class="tab" id="tabWatched"        onclick="setTab('watched',this)" style="display:none">Watched <span class="count-badge" id="watchedCount">0</span></button>
-  <button class="tab" id="tabContrib"        onclick="setTab('contrib',this)">Contributors <span class="count-badge" id="contribCount">0</span></button>
+  <button class="tab"        id="tabWatched" onclick="setTab('watched',this)">Watched <span class="count-badge" id="watchedCount">0</span></button>
+  <button class="tab"        id="tabContrib" onclick="setTab('contrib',this)">Contributors <span class="count-badge" id="contribCount">0</span></button>
 </div>
 
 <div class="toolbar" id="toolbar" style="display:none"></div>
@@ -249,19 +252,18 @@ let db, unsubscribe;
 let movies      = [];
 let userName    = '';
 let isAdmin     = false;
+let adminToken  = '';
 let currentTab  = 'queue';
 let watchedSort = 'date';
 let contribSort = 'volume';
 let searchTimer = null;
 let pendingMovie = null;
-
-// Title tap counter for secret admin trigger
 let titleTaps = 0, titleTimer = null;
 
 firebase.initializeApp(FB_CONFIG);
 db = firebase.firestore();
 
-// ── Secret admin trigger — tap title 5 times ──────────────────
+// ── Secret admin trigger: tap title 5× ───────────────────────
 document.getElementById('mainTitle').addEventListener('click', () => {
   titleTaps++;
   clearTimeout(titleTimer);
@@ -284,18 +286,35 @@ document.getElementById('adminPassInput').addEventListener('keydown', e => {
   if (e.key === 'Escape') closeAdminPrompt();
 });
 
-function submitAdminPass() {
-  const val = document.getElementById('adminPassInput').value;
-  if (val === ADMIN_PASS) {
-    isAdmin = true;
-    sessionStorage.setItem('mq-admin', '1');
-    closeAdminPrompt();
-    applyAdminUI();
-    render();
-  } else {
-    document.getElementById('adminError').textContent = 'Wrong password. Try again.';
-    document.getElementById('adminPassInput').value = '';
-    document.getElementById('adminPassInput').focus();
+async function submitAdminPass() {
+  const btn = document.getElementById('adminSubmitBtn');
+  const pass = document.getElementById('adminPassInput').value;
+  btn.textContent = 'Checking…';
+  btn.disabled = true;
+  try {
+    const r = await fetch(FN_ADMIN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    const data = await r.json();
+    if (data.ok) {
+      isAdmin    = true;
+      adminToken = data.token;
+      sessionStorage.setItem('mq-admin-token', adminToken);
+      closeAdminPrompt();
+      applyAdminUI();
+      render();
+    } else {
+      document.getElementById('adminError').textContent = 'Wrong password.';
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminPassInput').focus();
+    }
+  } catch(e) {
+    document.getElementById('adminError').textContent = 'Could not reach server.';
+  } finally {
+    btn.textContent = 'Unlock';
+    btn.disabled = false;
   }
 }
 
@@ -305,28 +324,19 @@ function closeAdminPrompt() {
 
 function logoutAdmin() {
   isAdmin = false;
-  sessionStorage.removeItem('mq-admin');
+  adminToken = '';
+  sessionStorage.removeItem('mq-admin-token');
   applyAdminUI();
-  // Switch away from watched tab if on it
-  if (currentTab === 'watched') {
-    currentTab = 'queue';
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tabQueue').classList.add('active');
-  }
   render();
 }
 
 function applyAdminUI() {
-  const watchedTab = document.getElementById('tabWatched');
-  const badge      = document.getElementById('viewerName');
+  const badge = document.getElementById('viewerName');
+  const name  = userName || '';
   if (isAdmin) {
-    watchedTab.style.display = '';
-    // Update badge to show admin
-    const name = userName || 'Admin';
     badge.innerHTML = `<span class="viewer-tag">👤 ${esc(name)}</span><span class="admin-badge">⚡ Admin</span>`;
   } else {
-    watchedTab.style.display = 'none';
-    if (userName) badge.innerHTML = `<span class="viewer-tag">👤 ${esc(userName)}</span>`;
+    if (name) badge.innerHTML = `<span class="viewer-tag">👤 ${esc(name)}</span>`;
   }
   renderToolbar();
 }
@@ -341,8 +351,7 @@ function startListening() {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('movieList').style.display = 'block';
     }, err => {
-      console.error(err);
-      document.getElementById('loading').textContent = 'Could not connect. Check your Firebase config.';
+      document.getElementById('loading').textContent = 'Could not connect to database.';
     });
 }
 
@@ -361,7 +370,7 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── OMDB ──────────────────────────────────────────────────────
+// ── OMDB via Cloud Functions ──────────────────────────────────
 const input = document.getElementById('movieInput');
 const acBox  = document.getElementById('autocomplete');
 
@@ -380,11 +389,10 @@ document.addEventListener('click', e => {
 });
 
 async function searchOMDB(q) {
-  if (!OMDB_KEY || OMDB_KEY.length < 5) return;
   acBox.innerHTML = '<div class="ac-searching">Searching…</div>';
   acBox.style.display = 'block';
   try {
-    const r    = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(q)}&type=movie&apikey=${OMDB_KEY}`);
+    const r    = await fetch(`${FN_SEARCH}?q=${encodeURIComponent(q)}`);
     const data = await r.json();
     if (data.Response === 'False' || !data.Search) {
       acBox.innerHTML = '<div class="ac-searching">No results found.</div>';
@@ -409,7 +417,7 @@ async function selectMovie(imdbID, title, year, poster) {
   acBox.style.display = 'none';
   input.value = title;
   try {
-    const r = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=${OMDB_KEY}`);
+    const r = await fetch(`${FN_DETAIL}?id=${encodeURIComponent(imdbID)}`);
     showPreview(await r.json());
   } catch(e) {
     showPreview({ Title: title, Year: year, Poster: poster, imdbID, Plot: '', Genre: '', imdbRating: 'N/A', Runtime: '' });
@@ -463,24 +471,10 @@ async function confirmAdd() {
 }
 
 function handleAddClick() {
-  if (!OMDB_KEY || OMDB_KEY.length < 5) addPlain();
-  else if (pendingMovie) confirmAdd();
+  if (pendingMovie) confirmAdd();
 }
 
-async function addPlain() {
-  const title = input.value.trim();
-  if (!title || !userName) { if (!userName) document.getElementById('namePrompt').style.display = 'flex'; return; }
-  await db.collection('movies').add({
-    title, year:'', poster:'', genre:'', runtime:'', imdbRating:'', imdbID:'',
-    addedBy: userName,
-    addedAt: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
-    addedTs: firebase.firestore.FieldValue.serverTimestamp(),
-    completed: false, rating: 0, completedTs: null
-  });
-  input.value = '';
-}
-
-// ── Firestore actions (admin only) ────────────────────────────
+// ── Firestore actions ─────────────────────────────────────────
 async function toggleComplete(id) {
   if (!isAdmin) return;
   const m = movies.find(x => x.id === id);
@@ -501,7 +495,6 @@ async function setRating(id, stars) {
 async function deleteMovie(id) {
   const m = movies.find(x => x.id === id);
   if (!m) return;
-  // Admin can delete anything; users can only delete their own
   if (!isAdmin && m.addedBy !== userName) return;
   await db.collection('movies').doc(id).delete();
 }
@@ -517,12 +510,12 @@ function setTab(tab, el) {
 
 function renderToolbar() {
   const tb = document.getElementById('toolbar');
-  if (currentTab === 'watched' && isAdmin) {
+  if (currentTab === 'watched') {
     tb.style.display = 'flex';
     tb.innerHTML = `
       <span class="sort-label">Sort by</span>
       <button class="sort-btn ${watchedSort==='date'  ?'active':''}" onclick="setWatchedSort('date')">📅 Date watched</button>
-      <button class="sort-btn ${watchedSort==='rating'?'active':''}" onclick="setWatchedSort('rating')">⭐ My rating</button>`;
+      <button class="sort-btn ${watchedSort==='rating'?'active':''}" onclick="setWatchedSort('rating')">⭐ Rating</button>`;
   } else if (currentTab === 'contrib') {
     tb.style.display = 'flex';
     tb.innerHTML = `
@@ -587,9 +580,36 @@ function renderMovieList(list, container, empty, emptyMsg) {
   container.className = 'movie-list';
 
   container.innerHTML = list.map((m, i) => {
-    const canDelete  = isAdmin || m.addedBy === userName;
-    const showWatch  = isAdmin;
-    const showRating = isAdmin && m.completed;
+    const canDelete = isAdmin || m.addedBy === userName;
+    const showWatch = isAdmin;  // only admin sees ✓ Watched / ↩ Undo
+
+    // Stars: interactive for admin on watched tab, display-only otherwise
+    const starsHtml = m.completed ? (() => {
+      if (isAdmin) {
+        return `
+          <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
+            <span class="rating-label">My rating:</span>
+            <div class="star-row" id="stars-${m.id}">
+              ${[1,2,3,4,5].map(s => `
+                <span class="star interactive${m.rating >= s ? ' lit' : ''}"
+                  onclick="setRating('${m.id}',${s})"
+                  onmouseover="hoverStars('${m.id}',${s})"
+                  onmouseout="resetStars('${m.id}',${m.rating})"
+                >★</span>`).join('')}
+            </div>
+          </div>`;
+      } else if (m.rating > 0) {
+        // Read-only star display for regular users
+        return `
+          <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
+            <span class="rating-label">Rated:</span>
+            <div class="star-row">
+              ${[1,2,3,4,5].map(s => `<span class="star${m.rating >= s ? ' lit' : ''}">★</span>`).join('')}
+            </div>
+          </div>`;
+      }
+      return '';
+    })() : '';
 
     return `
     <div class="movie-card${m.completed ? ' completed' : ''}">
@@ -604,19 +624,9 @@ function renderMovieList(list, container, empty, emptyMsg) {
             Suggested by ${esc(m.addedBy)} · ${esc(m.addedAt)}
             ${m.genre ? ` · <span style="opacity:0.7">${esc(m.genre.split(',')[0])}</span>` : ''}
             ${m.imdbRating ? `<span class="imdb-rating">★ ${esc(m.imdbRating)}</span>` : ''}
+            ${m.completed && !isAdmin ? `<span class="watched-label">✓ Watched</span>` : ''}
           </div>
-          ${showRating ? `
-          <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
-            <span class="rating-label">My rating:</span>
-            <div class="star-row" id="stars-${m.id}">
-              ${[1,2,3,4,5].map(s => `
-                <span class="star${m.rating >= s ? ' lit' : ''}"
-                  onclick="setRating('${m.id}',${s})"
-                  onmouseover="hoverStars('${m.id}',${s})"
-                  onmouseout="resetStars('${m.id}',${m.rating})"
-                >★</span>`).join('')}
-            </div>
-          </div>` : ''}
+          ${starsHtml}
         </div>
         ${showWatch ? `
         <button class="btn-complete" onclick="toggleComplete('${m.id}')">
@@ -649,7 +659,6 @@ function renderContributors(contribs, container, empty) {
   });
 
   const maxTotal = Math.max(...sorted.map(c => c.total), 1);
-
   container.innerHTML = sorted.map((c, i) => {
     const avgRating = c.ratedCount ? (c.ratingSum / c.ratedCount).toFixed(1) : '—';
     const initials  = c.name.slice(0, 2).toUpperCase();
@@ -692,9 +701,10 @@ window.addEventListener('load', () => {
     userName = saved;
     document.getElementById('namePrompt').style.display = 'none';
   }
-  // Restore admin session (survives page refresh, not tab close)
-  if (sessionStorage.getItem('mq-admin') === '1') {
-    isAdmin = true;
+  const savedToken = sessionStorage.getItem('mq-admin-token');
+  if (savedToken) {
+    isAdmin    = true;
+    adminToken = savedToken;
   }
   applyAdminUI();
   startListening();
