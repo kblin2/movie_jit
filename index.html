@@ -90,6 +90,9 @@
   .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; opacity: 0.3; }
   .empty p { font-size: 0.9rem; }
 
+  /* Watched tab read-only notice */
+  .readonly-notice { display: flex; align-items: center; gap: 0.5rem; background: rgba(26,23,20,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--muted); }
+
   .movie-list { display: flex; flex-direction: column; gap: 0.6rem; }
   .movie-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: stretch; overflow: hidden; transition: border-color 0.15s; animation: slideIn 0.25s ease; }
   @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
@@ -156,7 +159,6 @@
 <body>
 
 <script>
-  // ── Paste your Firebase config here (safe to expose) ──
   const FB_CONFIG = {
     apiKey:            "YOUR_FIREBASE_API_KEY",
     authDomain:        "YOUR_PROJECT.firebaseapp.com",
@@ -165,8 +167,6 @@
     messagingSenderId: "YOUR_SENDER_ID",
     appId:             "YOUR_APP_ID"
   };
-
-  // ── Paste your Cloud Function URLs here (no secrets, just URLs) ──
   const FN_BASE   = "YOUR_WORKER_URL";
   const FN_SEARCH = FN_BASE + "/search";
   const FN_DETAIL = FN_BASE + "/detail";
@@ -186,7 +186,7 @@
   </div>
 </div>
 
-<!-- Admin password modal -->
+<!-- Admin modal -->
 <div class="admin-overlay" id="adminOverlay" style="display:none">
   <div class="admin-modal">
     <h2>🔐 Admin mode</h2>
@@ -200,7 +200,7 @@
   </div>
 </div>
 
-<!-- Movie preview modal -->
+<!-- Preview modal -->
 <div class="preview-overlay" id="previewOverlay" style="display:none">
   <div class="preview-card">
     <div class="preview-inner">
@@ -287,15 +287,15 @@ document.getElementById('adminPassInput').addEventListener('keydown', e => {
 });
 
 async function submitAdminPass() {
-  const btn = document.getElementById('adminSubmitBtn');
+  const btn  = document.getElementById('adminSubmitBtn');
   const pass = document.getElementById('adminPassInput').value;
   btn.textContent = 'Checking…';
   btn.disabled = true;
   try {
-    const r = await fetch(FN_ADMIN, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pass })
+    const r    = await fetch(FN_ADMIN, {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({password: pass})
     });
     const data = await r.json();
     if (data.ok) {
@@ -323,7 +323,7 @@ function closeAdminPrompt() {
 }
 
 function logoutAdmin() {
-  isAdmin = false;
+  isAdmin    = false;
   adminToken = '';
   sessionStorage.removeItem('mq-admin-token');
   applyAdminUI();
@@ -346,11 +346,11 @@ function startListening() {
   if (unsubscribe) unsubscribe();
   unsubscribe = db.collection('movies').orderBy('addedTs', 'desc')
     .onSnapshot(snap => {
-      movies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      movies = snap.docs.map(d => ({id: d.id, ...d.data()}));
       render();
-      document.getElementById('loading').style.display = 'none';
+      document.getElementById('loading').style.display  = 'none';
       document.getElementById('movieList').style.display = 'block';
-    }, err => {
+    }, () => {
       document.getElementById('loading').textContent = 'Could not connect to database.';
     });
 }
@@ -370,7 +370,7 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── OMDB via Cloud Functions ──────────────────────────────────
+// ── OMDB via Cloudflare Worker ────────────────────────────────
 const input = document.getElementById('movieInput');
 const acBox  = document.getElementById('autocomplete');
 
@@ -420,7 +420,7 @@ async function selectMovie(imdbID, title, year, poster) {
     const r = await fetch(`${FN_DETAIL}?id=${encodeURIComponent(imdbID)}`);
     showPreview(await r.json());
   } catch(e) {
-    showPreview({ Title: title, Year: year, Poster: poster, imdbID, Plot: '', Genre: '', imdbRating: 'N/A', Runtime: '' });
+    showPreview({Title: title, Year: year, Poster: poster, imdbID, Plot: '', Genre: '', imdbRating: 'N/A', Runtime: ''});
   }
 }
 
@@ -453,14 +453,14 @@ async function confirmAdd() {
   const d = pendingMovie;
   await db.collection('movies').add({
     title:       d.Title,
-    year:        d.Year || '',
+    year:        d.Year        || '',
     poster:      (d.Poster     && d.Poster     !== 'N/A') ? d.Poster     : '',
     genre:       (d.Genre      && d.Genre      !== 'N/A') ? d.Genre      : '',
     runtime:     (d.Runtime    && d.Runtime    !== 'N/A') ? d.Runtime    : '',
     imdbRating:  (d.imdbRating && d.imdbRating !== 'N/A') ? d.imdbRating : '',
-    imdbID:      d.imdbID || '',
+    imdbID:      d.imdbID      || '',
     addedBy:     userName,
-    addedAt:     new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' }),
+    addedAt:     new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}),
     addedTs:     firebase.firestore.FieldValue.serverTimestamp(),
     completed:   false,
     rating:      0,
@@ -489,13 +489,16 @@ async function toggleComplete(id) {
 
 async function setRating(id, stars) {
   if (!isAdmin) return;
-  await db.collection('movies').doc(id).update({ rating: stars });
+  await db.collection('movies').doc(id).update({rating: stars});
 }
 
-async function deleteMovie(id) {
+async function deleteMovie(id, isWatched) {
   const m = movies.find(x => x.id === id);
   if (!m) return;
-  if (!isAdmin && m.addedBy !== userName) return;
+  // Watched items: admin only
+  // Queue items: admin or the person who added it
+  if (isWatched && !isAdmin) return;
+  if (!isWatched && !isAdmin && m.addedBy !== userName) return;
   await db.collection('movies').doc(id).delete();
 }
 
@@ -538,7 +541,7 @@ function render() {
   const contribMap = {};
   movies.forEach(m => {
     const name = m.addedBy || 'Unknown';
-    if (!contribMap[name]) contribMap[name] = { name, total:0, watched:0, ratingSum:0, ratedCount:0 };
+    if (!contribMap[name]) contribMap[name] = {name, total:0, watched:0, ratingSum:0, ratedCount:0};
     contribMap[name].total++;
     if (m.completed) {
       contribMap[name].watched++;
@@ -555,7 +558,7 @@ function render() {
   const empty     = document.getElementById('emptyState');
 
   if (currentTab === 'queue') {
-    renderMovieList(queued, container, empty, 'Nothing in the queue yet — add something!');
+    renderMovieList(queued, container, empty, 'Nothing in the queue yet — add something!', false);
   } else if (currentTab === 'watched') {
     const sorted = [...watched].sort((a, b) => {
       if (watchedSort === 'rating') return (b.rating || 0) - (a.rating || 0);
@@ -563,13 +566,13 @@ function render() {
       const tb = a.completedTs?.seconds ?? a.addedTs?.seconds ?? 0;
       return ta - tb;
     });
-    renderMovieList(sorted, container, empty, 'No watched movies yet.');
+    renderMovieList(sorted, container, empty, 'No watched movies yet.', true);
   } else {
     renderContributors(contribs, container, empty);
   }
 }
 
-function renderMovieList(list, container, empty, emptyMsg) {
+function renderMovieList(list, container, empty, emptyMsg, isWatchedTab) {
   if (!list.length) {
     container.innerHTML = '';
     empty.style.display = 'block';
@@ -579,11 +582,16 @@ function renderMovieList(list, container, empty, emptyMsg) {
   empty.style.display = 'none';
   container.className = 'movie-list';
 
-  container.innerHTML = list.map((m, i) => {
-    const canDelete = isAdmin || m.addedBy === userName;
-    const showWatch = isAdmin;  // only admin sees ✓ Watched / ↩ Undo
+  // Show read-only notice on watched tab for non-admins
+  const notice = (isWatchedTab && !isAdmin)
+    ? `<div class="readonly-notice">👀 This is a read-only view of watched movies — only the admin can make changes here.</div>`
+    : '';
 
-    // Stars: interactive for admin on watched tab, display-only otherwise
+  const cards = list.map((m, i) => {
+    // Queue tab: user can delete their own. Watched tab: admin only.
+    const canDelete  = isAdmin || (!isWatchedTab && m.addedBy === userName);
+    const showWatch  = isAdmin; // only admin sees ✓ Watched / ↩ Undo
+
     const starsHtml = m.completed ? (() => {
       if (isAdmin) {
         return `
@@ -599,7 +607,6 @@ function renderMovieList(list, container, empty, emptyMsg) {
             </div>
           </div>`;
       } else if (m.rating > 0) {
-        // Read-only star display for regular users
         return `
           <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
             <span class="rating-label">Rated:</span>
@@ -633,10 +640,12 @@ function renderMovieList(list, container, empty, emptyMsg) {
           ${m.completed ? '↩ Undo' : '✓ Watched'}
         </button>` : ''}
         ${canDelete ? `
-        <button class="btn-delete" onclick="deleteMovie('${m.id}')" title="Remove">×</button>` : ''}
+        <button class="btn-delete" onclick="deleteMovie('${m.id}', ${isWatchedTab})" title="Remove">×</button>` : ''}
       </div>
     </div>`;
   }).join('');
+
+  container.innerHTML = notice + cards;
 }
 
 function renderContributors(contribs, container, empty) {
