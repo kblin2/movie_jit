@@ -154,6 +154,27 @@
     .add-form { flex-direction: column; }
     .autocomplete { right: 0; }
   }
+
+    .side-photo {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    opacity: 0.85;
+    box-shadow: 0 8px 32px rgba(26,23,20,0.15);
+    transition: opacity 0.2s;
+  }
+  .side-photo:hover { opacity: 1; }
+  .side-photo.left  { left: calc(50% - 480px); }
+  .side-photo.right { right: calc(50% - 480px); }
+
+  /* Hide on smaller screens where there's no room */
+  @media (max-width: 1200px) {
+    .side-photo { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -200,6 +221,10 @@
   </div>
 </div>
 
+<!-- Side images -->
+<img class="side-photo left"  src="ken_chad.jpg"  alt="">
+<img class="side-photo right" src="ken_rad.jpg" alt="">
+
 <!-- Preview modal -->
 <div class="preview-overlay" id="previewOverlay" style="display:none">
   <div class="preview-card">
@@ -219,8 +244,8 @@
 </div>
 
 <header>
-  <h1 id="mainTitle">🎬 The Queue</h1>
-  <p class="subtitle">Suggest a movie for the list. <span id="viewerName"></span></p>
+  <h1 id="mainTitle">🎬 Kenny's Kool Kinemas</h1>
+  <p class="subtitle">Give me movie recs :3. <span id="viewerName"></span></p>
   <div class="search-wrap">
     <div class="add-form">
       <input type="text" id="movieInput" placeholder="Search for a movie…" maxlength="80" autocomplete="off">
