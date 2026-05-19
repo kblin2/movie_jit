@@ -155,12 +155,12 @@
     .autocomplete { right: 0; }
   }
 
-    .side-photo {
+  .side-photo {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 200px;
-    height: 320px;
+    width: 220px;
+    height: 500px;
     object-fit: cover;
     border-radius: 12px;
     opacity: 0.85;
@@ -168,10 +168,9 @@
     transition: opacity 0.2s;
   }
   .side-photo:hover { opacity: 1; }
-  .side-photo.left  { left: calc(50% - 480px); }
-  .side-photo.right { right: calc(50% - 480px); }
+  .side-photo.left  { left: 20px; }
+  .side-photo.right { right: 20px; }
 
-  /* Hide on smaller screens where there's no room */
   @media (max-width: 1200px) {
     .side-photo { display: none; }
   }
