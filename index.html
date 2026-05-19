@@ -157,19 +157,17 @@
 
   .side-photo {
     position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 220px;
-    height: 500px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
     object-fit: cover;
-    border-radius: 12px;
     opacity: 0.85;
     box-shadow: 0 8px 32px rgba(26,23,20,0.15);
     transition: opacity 0.2s;
   }
   .side-photo:hover { opacity: 1; }
-  .side-photo.left  { left: 20px; }
-  .side-photo.right { right: 20px; }
+  .side-photo.left  { left: 0; border-radius: 0 12px 12px 0; }
+  .side-photo.right { right: 0; border-radius: 12px 0 0 12px; }
 
   @media (max-width: 1200px) {
     .side-photo { display: none; }
