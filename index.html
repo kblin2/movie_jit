@@ -122,6 +122,22 @@
   .btn-delete:hover { color: var(--accent); }
   .rating-label { font-size: 0.72rem; color: var(--muted); margin-right: 4px; }
 
+  /* Decimal rating slider */
+  .rating-wrap { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .rating-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; border-radius: 2px; background: rgba(26,23,20,0.12); outline: none; cursor: pointer; }
+  .rating-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); cursor: pointer; }
+  .rating-slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
+  .rating-value { font-size: 0.85rem; font-weight: 500; color: var(--gold); min-width: 2.2rem; }
+  .rating-display { font-size: 0.82rem; color: var(--gold); font-weight: 500; margin-top: 4px; }
+
+  /* Review box */
+  .review-wrap { margin-top: 6px; }
+  .review-textarea { width: 100%; padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--ink); background: var(--cream); resize: none; outline: none; line-height: 1.5; transition: border-color 0.15s; }
+  .review-textarea:focus { border-color: var(--accent); }
+  .review-save-btn { margin-top: 4px; padding: 0.3rem 0.8rem; background: var(--ink); color: white; border: none; border-radius: 5px; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .review-save-btn:hover { background: #333; }
+  .review-text { font-size: 0.82rem; color: var(--muted); margin-top: 5px; font-style: italic; line-height: 1.5; border-left: 2px solid var(--border); padding-left: 8px; }
+
   .contributors-list { display: flex; flex-direction: column; gap: 0.75rem; }
   .contributor-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; animation: slideIn 0.25s ease; }
   .contributor-card:hover { border-color: rgba(26,23,20,0.22); }
@@ -487,6 +503,7 @@ async function confirmAdd() {
     addedTs:     firebase.firestore.FieldValue.serverTimestamp(),
     completed:   false,
     rating:      0,
+    review:      '',
     completedTs: null
   });
   input.value = '';
@@ -510,9 +527,19 @@ async function toggleComplete(id) {
   });
 }
 
-async function setRating(id, stars) {
+async function setRating(id, val) {
   if (!isAdmin) return;
-  await db.collection('movies').doc(id).update({rating: stars});
+  const rating = Math.round(parseFloat(val) * 10) / 10;
+  await db.collection('movies').doc(id).update({rating});
+  const el = document.getElementById('ratingVal-' + id);
+  if (el) el.textContent = rating.toFixed(1) + ' / 5';
+}
+
+async function saveReview(id) {
+  if (!isAdmin) return;
+  const el = document.getElementById('review-' + id);
+  if (!el) return;
+  await db.collection('movies').doc(id).update({review: el.value.trim()});
 }
 
 async function deleteMovie(id, isWatched) {
@@ -615,30 +642,30 @@ function renderMovieList(list, container, empty, emptyMsg, isWatchedTab) {
     const canDelete  = isAdmin || (!isWatchedTab && m.addedBy === userName);
     const showWatch  = isAdmin; // only admin sees ✓ Watched / ↩ Undo
 
-    const starsHtml = m.completed ? (() => {
+    const ratingAndReview = m.completed ? (() => {
       if (isAdmin) {
+        const cur = (m.rating || 0).toFixed(1);
         return `
-          <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
+          <div class="rating-wrap">
             <span class="rating-label">My rating:</span>
-            <div class="star-row" id="stars-${m.id}">
-              ${[1,2,3,4,5].map(s => `
-                <span class="star interactive${m.rating >= s ? ' lit' : ''}"
-                  onclick="setRating('${m.id}',${s})"
-                  onmouseover="hoverStars('${m.id}',${s})"
-                  onmouseout="resetStars('${m.id}',${m.rating})"
-                >★</span>`).join('')}
-            </div>
+            <input class="rating-slider" type="range" min="0" max="5" step="0.1"
+              value="${cur}"
+              oninput="setRating('${m.id}', this.value)"
+            >
+            <span class="rating-value" id="ratingVal-${m.id}">${cur} / 5</span>
+          </div>
+          <div class="review-wrap">
+            <textarea class="review-textarea" id="review-${m.id}" rows="2"
+              placeholder="Write a review…"
+            >${esc(m.review || '')}</textarea>
+            <button class="review-save-btn" onclick="saveReview('${m.id}')">Save review</button>
           </div>`;
-      } else if (m.rating > 0) {
-        return `
-          <div style="display:flex;align-items:center;margin-top:5px;gap:4px">
-            <span class="rating-label">Rated:</span>
-            <div class="star-row">
-              ${[1,2,3,4,5].map(s => `<span class="star${m.rating >= s ? ' lit' : ''}">★</span>`).join('')}
-            </div>
-          </div>`;
+      } else {
+        const parts = [];
+        if (m.rating > 0) parts.push(`<div class="rating-display">⭐ ${m.rating.toFixed(1)} / 5</div>`);
+        if (m.review)     parts.push(`<div class="review-text">${esc(m.review)}</div>`);
+        return parts.join('');
       }
-      return '';
     })() : '';
 
     return `
@@ -656,7 +683,7 @@ function renderMovieList(list, container, empty, emptyMsg, isWatchedTab) {
             ${m.imdbRating ? `<span class="imdb-rating">★ ${esc(m.imdbRating)}</span>` : ''}
             ${m.completed && !isAdmin ? `<span class="watched-label">✓ Watched</span>` : ''}
           </div>
-          ${starsHtml}
+          ${ratingAndReview}
         </div>
         ${showWatch ? `
         <button class="btn-complete" onclick="toggleComplete('${m.id}')">
@@ -717,14 +744,6 @@ function renderContributors(contribs, container, empty) {
   }).join('');
 }
 
-function hoverStars(id, n) {
-  document.getElementById('stars-' + id)?.querySelectorAll('.star')
-    .forEach((s, i) => s.classList.toggle('lit', i < n));
-}
-function resetStars(id, rating) {
-  document.getElementById('stars-' + id)?.querySelectorAll('.star')
-    .forEach((s, i) => s.classList.toggle('lit', i < rating));
-}
 
 // ── Boot ──────────────────────────────────────────────────────
 window.addEventListener('load', () => {
