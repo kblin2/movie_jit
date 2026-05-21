@@ -529,10 +529,20 @@ async function toggleComplete(id) {
 
 async function setRating(id, val) {
   if (!isAdmin) return;
-  const rating = Math.round(parseFloat(val) * 10) / 10;
+  const rating = Math.min(5, Math.max(0, Math.round(parseFloat(val) * 10) / 10));
   await db.collection('movies').doc(id).update({rating});
-  const el = document.getElementById('ratingVal-' + id);
-  if (el) el.textContent = rating.toFixed(1) + ' / 5';
+}
+
+function syncRating(id, val, update) {
+  const num = Math.min(5, Math.max(0, parseFloat(val) || 0));
+  if (update === 'num') {
+    const numEl = document.getElementById('ratingNum-' + id);
+    if (numEl) numEl.value = num.toFixed(1);
+  } else {
+    const sliderEl = document.querySelector(`input[oninput*="'${id}', this.value, 'num'"]`);
+    if (sliderEl) sliderEl.value = num;
+  }
+  setRating(id, num);
 }
 
 async function saveReview(id) {
@@ -650,9 +660,14 @@ function renderMovieList(list, container, empty, emptyMsg, isWatchedTab) {
             <span class="rating-label">My rating:</span>
             <input class="rating-slider" type="range" min="0" max="5" step="0.1"
               value="${cur}"
-              oninput="setRating('${m.id}', this.value)"
+              oninput="syncRating('${m.id}', this.value, 'num')"
             >
-            <span class="rating-value" id="ratingVal-${m.id}">${cur} / 5</span>
+            <input id="ratingNum-${m.id}" type="number" min="0" max="5" step="0.1"
+              value="${cur}"
+              style="width:52px;padding:2px 6px;border:1px solid var(--border);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:var(--cream);color:var(--ink);outline:none;"
+              oninput="syncRating('${m.id}', this.value, 'slider')"
+            >
+            <span class="rating-label">/ 5</span>
           </div>
           <div class="review-wrap">
             <textarea class="review-textarea" id="review-${m.id}" rows="2"
